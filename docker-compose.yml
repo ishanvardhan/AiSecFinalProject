@@ -1,0 +1,19 @@
+services:
+  narcissus:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8888:8888"  # For Jupyter access
+    volumes:
+      - ./narcissus:/workspace/narcissus
+      - ./dataset:/workspace/narcissus/dataset
+    working_dir: /workspace/narcissus
+    tty: true
+    stdin_open: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    runtime: nvidia
