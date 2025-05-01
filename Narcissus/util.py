@@ -341,3 +341,32 @@ class concoct_dataset(torch.utils.data.Dataset):
 
     def __len__(self):
         return len(self.idataset)+len(self.odataset)
+
+class PoisonedDatasetRandomized(Dataset):
+    def __init__(self, dataset, indices, base_noise, transform=None, epsilon=0.05):
+        
+        self.dataset = dataset
+        self.indices = set(indices)
+        self.base_noise = base_noise
+        self.transform = transform
+        self.epsilon = epsilon
+
+    def __len__(self):
+        return len(self.dataset)
+
+    def apply_randomized_trigger(self, base_trigger):
+        noise = torch.randn_like(base_trigger) * self.epsilon
+        randomized_trigger = base_trigger + noise
+        return torch.clamp(randomized_trigger, -1, 1)
+
+    def __getitem__(self, idx):
+        image, label = self.dataset[idx]
+        
+        if idx in self.indices:
+            randomized_trigger = self.apply_randomized_trigger(self.base_noise)
+            image = torch.clamp(apply_noise_patch(randomized_trigger, image, mode='add'), -1, 1)
+        
+        if self.transform:
+            image = self.transform(image)
+        
+        return image, label
