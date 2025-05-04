@@ -1,4 +1,4 @@
-# AiSec Final Project — Narcissus Backdoor Attack Enhancements
+# AI Security (CS 680A) Final Project — Narcissus Backdoor Attack Enhancements
 
 ## Team Members
 - Ishan Vardhan  
